@@ -2,23 +2,22 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import model.entities.Reservation;
+import model.exceptions.DomainException;
 
 public class App {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        System.out.print("Room number: ");
-        int roomNumber = sc.nextInt();
-        sc.nextLine();
-        System.out.print("Check-in date (dd/MM/yyyy): ");
-        LocalDate checkIn = LocalDate.parse(sc.nextLine(), fmt);
-        System.out.print("Check-out date (dd/MM/yyyy): ");
-        LocalDate checkOut = LocalDate.parse(sc.nextLine(), fmt);
+        try {
+            System.out.print("Room number: ");
+            int roomNumber = sc.nextInt();
+            sc.nextLine();
+            System.out.print("Check-in date (dd/MM/yyyy): ");
+            LocalDate checkIn = LocalDate.parse(sc.nextLine(), fmt);
+            System.out.print("Check-out date (dd/MM/yyyy): ");
+            LocalDate checkOut = LocalDate.parse(sc.nextLine(), fmt);
 
-        if (checkIn.isAfter(checkOut)) {
-            System.err.println("Error in reservation: Check-out date must be after check-in date");
-        } else {
             Reservation reservation = new Reservation(roomNumber, checkIn, checkOut);
             System.out.println(reservation);
 
@@ -29,14 +28,11 @@ public class App {
             System.out.print("Check-out date (dd/MM/yyyy): ");
             checkOut = LocalDate.parse(sc.nextLine(), fmt);
 
-            String error = reservation.updateDates(checkIn, checkOut);
-            if (error != null) {
-                System.out.println("Error in reservation: " + error);
-            }
+            reservation.updateDates(checkIn, checkOut);
             System.out.println(reservation);
-
+        } catch (DomainException e) {
+            System.out.println("Error in reservation: " + e.getMessage());
         }
-
         sc.close();
     }
 }
